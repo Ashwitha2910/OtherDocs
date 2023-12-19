@@ -1,0 +1,80 @@
+Question 1. What is diff. between JIT and interpreter?
+Question 2. What is use case in which we can use inheritance?
+Question 3. What are significance of static and final keyword?
+Question 4. How to achieve abstraction?
+Question 5. What is mean by fully encapsulated class?
+Question 6. What is class loader subsystem?
+Question 7. Whhat are implementations of List and Set?
+Question 8. What is mean by Wrapper class? What is compararable and comparator,
+Question 9. What is String constant pool?
+Question 10. What is different between StringBuffer and StringBuilder?
+Question 11. Can we have static class in Java?
+Question 12. Explain Connection, Statement, PreparedStatement, Callable Statement?
+Question 13. Which class is Parent of all classes in Java?
+Question 14. Which classes are generate checked exception?
+Question 15. What is use of finally and in which case we will have to use it?
+Question 16. Which cursors are in Java?
+Question 17. What hashCode() method returns and this method from which class?
+Question 18. Which are legacy classes in Collection in Java?
+Question 19. What is annotations in Java?
+Question 20. Explain Runnable interface.
+Question 21. Which are methods in Thread class?
+Question 22. What is HashMap and in which scenario we can use HashMap?
+Question 23. Which collection classes we can use when our frequent operation will be 
+	     insert and delete and best for fetch data.
+Question 24. What is concurrent hash map/
+Question 25. In which scenario we can use TreeSet?
+------------------------------------------------------------------------------------------
+Question 26. Explain bootstrapping of hibernate.
+Question 27. What is Entity class in hibernate?
+Question 28. Explain Architecture of Hibernate.
+Question 29. Explain SessionFactory
+
+Question 30. Explain inheritance mapping in hibernate.
+Question 31. What is importance of configure() method of Configuration class?
+Question 32. What is Spring framework?
+Question 33. Why Spring is called as framework of framework?
+Question 34. What is Spring AOP and explain join points, point cut, advice, abstract
+Question 35. In how many ways we can implement Spring application.
+Question 36. What is SpringJdbc and which methods are in it for CRUD operation.
+Question 37. How to implement Spring MVC?
+Question 38. What are following annotation
+	a. @Configure
+	b. @Bean
+	c. @ComponentScan
+	d. @Entity
+	e. @GeneratedValue
+Question 39. What is mean by Stereotype annotation.
+Question 40. What is use of @ResponseBody, @PathVariable, @RequestMapping, @ModelAttribute, @RestController
+Question 41. What is use of validators in Spring Boot? and how to implement it?
+Question 42. What is ResponseEntity?
+Question 43. What is StatusCode?
+Question 44. What is @ExceptionHandler
+Question 45. What is Swagger and what is use of swagger?
+-----------------------------------------------Coding Challenges----------------------------------------------------------
+Question 46. Write a code to find out second highest number from given array.
+Question 47. Write a core Java code. Create a Map which will have Countries as key and Capital as Value.
+Then Display a Menu as given below:
+-----------------Country Game------------
+1. Get Country by Capital
+2. Get Capital by Country
+0. Exit
+------------------------------------------
+This loop should go untill I won't press 0.
+
+If my choice will be 1 then 
+We will have to provide name of capital and then it will return name of Country.
+and if my choice will be 2 then it will ask name country and result will be name
+ of capital.
+---------------------------------------------------------------------------------------------
+Question 48. Perform same operation with Hibernate from database.
+	------------------------------------------------------------------
+Question 49. Develop an application as a city management where city table will 
+have following fields.
+	city like city_id, city_name, 
+	city_country, city_desc.
+Create a REST api with endpoint as /city/{city_country} which will return city details.
+-----------------------------------------------------------------------------------------------------------------------
+
+
+		

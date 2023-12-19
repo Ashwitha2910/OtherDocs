@@ -1,0 +1,95 @@
+1. POM.xml - Add dependency
+------------------------------
+<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+-------------------------------------------
+2. run application and use username=user and password=security password
+-----------------------------------------
+3. application.properties
+----------------------------------------
+spring.security.user.name=bhushan
+spring.security.user.password=bhushan
+spring.security.user.roles=Admin
+-------------------------------------------------
+4. try with new username and password which specified in application.properties
+--------------------------------------------------
+Now try with in memory 
+-------------------------
+5. Create new package and add conguration class as given below:
+-----------------------
+package com.config;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+@Configuration
+public class SecurityConfig {
+	@Bean
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf().disable()
+		.authorizeHttpRequests((authorize)->authorize.anyRequest().authenticated())
+		.httpBasic(Customizer.withDefaults());
+		return http.build();
+	}
+}
+-----------------------------------------------
+6. Add new user
+--------------
+package com.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfig {
+	
+//	3
+	@Bean
+	public static PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+	
+//	1
+	@Bean
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf().disable()
+		.authorizeHttpRequests((authorize)->authorize.anyRequest().authenticated())
+		.httpBasic(Customizer.withDefaults());
+		return http.build();
+	}
+	
+//	2
+	@Bean
+	public UserDetailsService userDetailsService() {
+		UserDetails bhushan = User.builder()
+				.username("bhushan")
+				.password(passwordEncoder().encode("bhushan"))
+				.roles("USER")
+				.build();
+		UserDetails admin = User.builder()
+				.username("admin")
+				.password(passwordEncoder().encode("admin"))
+				.roles("ADMIN")
+				.build();
+		return new InMemoryUserDetailsManager(bhushan,admin);
+	}
+
+}
+Comment username and password in application.properties
+------------------------------------------------------------
+7. EnableMethodSecurity interface.
+----------------------------------
+

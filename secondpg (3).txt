@@ -1,0 +1,155 @@
+autoComplete:
+import { Component, EventEmitter, Output } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: 'autocomplete-input',
+  template: `
+    <div class="wrapper">
+      <div class="control" [class.is-loading]="isLoading">
+        <input
+          class="input"
+          type="text"
+          placeholder="Search..."
+          (input)="onInput($event.target.value)"
+        />
+      </div>
+      <div class="list" *ngIf="items.length > 0">
+        <a
+          class="list-item"
+          *ngFor="let item of items"
+          (click)="selectItem(item)"
+        >
+          {{ item }}
+        </a>
+      </div>
+    </div>
+  `,
+  styles: [
+    `
+      .wrapper {
+        position: relative;
+        width: 100%;
+      }
+
+      .control {
+        position: relative;
+        width: 100%;
+      }
+
+      .control.is-loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        border: 2px solid #ccc;
+        border-top-color: #333;
+        animation: spin 0.5s linear infinite;
+      }
+
+      .input {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        border: 1px solid #ccc;
+      }
+
+      .list {
+        position: absolute;
+        z-index: 10;
+        width: 100%;
+        max-height: 15rem;
+        overflow-y: auto;
+        margin-top: 0.5rem;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 0.25rem;
+      }
+
+      .list-item {
+        display: block;
+        padding: 0.5rem;
+        cursor: pointer;
+      }
+
+      @keyframes spin {
+        to {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+    `,
+  ],
+})
+export class AutocompleteComponent {
+  @Output() onSelect: EventEmitter<string> = new EventEmitter();
+
+  items: string[] = [];
+  isLoading: boolean = false;
+
+  constructor(private http: HttpClient) {}
+
+  onInput(query: string) {
+    if (!query) {
+      this.items = [];
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.getItems(query)
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap((items) => {
+          this.isLoading = false;
+          this.items = items;
+          return [];
+        })
+      )
+      .subscribe();
+  }
+
+  getItems(query: string): Observable<string[]> {
+    return this.http.get<string[]>(`https://example.com/api/items?q=${query}`);
+  }
+
+  selectItem(item: string) {
+    this.onSelect.emit(item);
+    this.items = [];
+  }
+}
+------------------------------------------------------------------------------
+tab component:
+
+import { Component,Input,ContentChildren, QueryList, AfterContentInit } from '@angular/core'; @Component({
+  selector: 'app-tab',
+  template: `<ng-content></ng-content>
+  `,
+})
+export class TabComponent {
+  @Input() title: string;
+  active: boolean = false;
+} @Component({
+  selector: 'app-tab-group',
+  template: `<div>      <ng-container *ngFor="let tab of tabs"><button class="btn" [class.btn-active]="tab.active" [disabled]="tab.active" (click)="activateTab(tab)">{{tab.title}}</button>    </ng-container>    </div>    <div>     <ng-container *ngFor="let tab of tabs">        <div class="view" *ngIf="tab.active"> <ng-container *ngTemplateOutlet="tab.content"></ng-container>       </div>     </ng-container>   </div>
+  `
+})
+export class TabGroupComponent implements AfterContentInit {
+  @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
+    ngAfterContentInit() {
+        const activeTab = this.tabs.find(tab => tab.active);
+        if (!activeTab && this.tabs.length > 0) {
+            this.activateTab(this.tabs.first);
+          }
+        }
+        activateTab(tab: TabComponent) {
+            this.tabs.forEach(t => t.active = false);
+            tab.active = true;
+          }
+}

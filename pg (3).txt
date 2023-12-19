@@ -1,0 +1,243 @@
+
+------------------------------------
+tab.component.ts
+
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-tab',
+  template: `
+    <ng-content></ng-content>
+  `
+})
+export class TabComponent {
+  @Input() title: string;
+}
+
+-----------------------------------------
+tab-group.component.ts
+
+import { Component, ContentChildren, QueryList, AfterContentInit } from '@angular/core';
+import { TabComponent } from './tab.component';
+
+@Component({
+  selector: 'app-tab-group',
+  template: `
+    <div class="tab-buttons">
+      <button *ngFor="let tab of tabs" 
+              [disabled]="tab.disabled"
+              [class.btn-active]="tab.active"
+              class="btn"
+              (click)="selectTab(tab)">
+        {{ tab.title }}
+      </button>
+    </div>
+    <div class="tab-views">
+      <ng-content></ng-content>
+    </div>
+  `
+})
+export class TabGroupComponent implements AfterContentInit {
+  @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
+
+  ngAfterContentInit() {
+    // set the first tab as active by default
+    const activeTab = this.tabs.find(tab => !tab.disabled);
+    if (activeTab) {
+      activeTab.active = true;
+    }
+  }
+
+  selectTab(selectedTab: TabComponent) {
+    // deactivate all tabs
+    this.tabs.forEach(tab => tab.active = false);
+
+    // activate the selected tab
+    selectedTab.active = true;
+  }
+}
+----------------------------------------------
+app.component.ts
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <app-tab-group>
+      <app-tab title="Tab 1">
+        <p>Content for Tab 1</p>
+      </app-tab>
+      <app-tab title="Tab 2">
+        <p>Content for Tab 2</p>
+      </app-tab>
+      <app-tab title="Tab 3">
+        <p>Content for Tab 3</p>
+      </app-tab>
+    </app-tab-group>
+  `
+})
+export class AppComponent {}
+
+
+
+
+
+
+
+------------------------------------------
+app.component.css
+
+.btn {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 5px;
+  outline: none;
+}
+
+.btn-active {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.tab-views app-tab {
+  display: none;
+}
+
+.tab-views app-tab.active {
+  display: block;
+}
+------------------------------------------------------------------------------------------------------------------------------------
+Auto Complete
+
+
+
+import { Component, EventEmitter, Output } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: 'autocomplete-input',
+  template: `
+    <div class="wrapper">
+      <div class="control" [class.is-loading]="isLoading">
+        <input
+          class="input"
+          type="text"
+          placeholder="Search..."
+          (input)="onInput($event.target.value)"
+        />
+      </div>
+      <div class="list" *ngIf="items.length > 0">
+        <a
+          class="list-item"
+          *ngFor="let item of items"
+          (click)="selectItem(item)"
+        >
+          {{ item }}
+        </a>
+      </div>
+    </div>
+  `,
+  styles: [
+    `
+      .wrapper {
+        position: relative;
+        width: 100%;
+      }
+
+      .control {
+        position: relative;
+        width: 100%;
+      }
+
+      .control.is-loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        border: 2px solid #ccc;
+        border-top-color: #333;
+        animation: spin 0.5s linear infinite;
+      }
+
+      .input {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        border: 1px solid #ccc;
+      }
+
+      .list {
+        position: absolute;
+        z-index: 10;
+        width: 100%;
+        max-height: 15rem;
+        overflow-y: auto;
+        margin-top: 0.5rem;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 0.25rem;
+      }
+
+      .list-item {
+        display: block;
+        padding: 0.5rem;
+        cursor: pointer;
+      }
+
+      @keyframes spin {
+        to {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+    `,
+  ],
+})
+export class AutocompleteComponent {
+  @Output() onSelect: EventEmitter<string> = new EventEmitter();
+
+  items: string[] = [];
+  isLoading: boolean = false;
+
+  constructor(private http: HttpClient) {}
+
+  onInput(query: string) {
+    if (!query) {
+      this.items = [];
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.getItems(query)
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap((items) => {
+          this.isLoading = false;
+          this.items = items;
+          return [];
+        })
+      )
+      .subscribe();
+  }
+
+  getItems(query: string): Observable<string[]> {
+    return this.http.get<string[]>(`https://example.com/api/items?q=${query}`);
+  }
+
+  selectItem(item: string) {
+    this.onSelect.emit(item);
+    this.items = [];
+  }
+}
+

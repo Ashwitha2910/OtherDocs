@@ -1,0 +1,65 @@
+import { Component, EventEmitter, Output } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: "autocomplete-input",
+  template: `
+    <div class="wrapper">
+      <div class="control" [class.is-loading]="isLoading">
+        <input
+          class="input"
+          type="text"
+          placeholder="Search..."
+          (input)="onInput($event.target.value)"
+        />
+      </div>
+      <div class="list" *ngIf="items.length > 0">
+        <a
+          class="list-item"
+          *ngFor="let item of items"
+          (click)="selectItem(item)"
+        >
+          {{ item }}
+        </a>
+      </div>
+    </div>
+  `,
+})
+export class AutocompleteComponent {
+  @Output() public onSelect = new EventEmitter();
+
+  items: string[] = [];
+  isLoading: boolean = false;
+
+  constructor(private http: HttpClient) {}
+  
+  ngOnInit(query:string){
+    if(!query){
+      this.items=[];
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.getItems(query)
+    .pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap((items)=>{
+        this.isLoading = false;
+        this.items = items;
+        return[];
+      })
+    ).subscribe();
+  }
+  getItems(query: string): Observable<string[]> {
+    return this.http.get<string[]>(`https://example.com/api/items?q=${query}`);
+  }
+
+  selectItem(item: string) {
+    this.onSelect.emit(item);
+    this.items = [];
+  }
+}

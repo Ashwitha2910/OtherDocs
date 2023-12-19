@@ -1,0 +1,135 @@
+1)two components communicate with each other
+
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  template: `
+  <h1>Value Provider:</h1>
+    <app-value-provider (typedValue)="onTypedValue($event)"></app-value-provider>
+
+    <h1>Value Receiver:</h1>
+    <app-value-receiver [printValue]="typedValue"></app-value-receiver>
+  `
+})
+export class AppComponent {
+   typedValue: string;
+
+  onTypedValue(value: string) {
+    this.typedValue = value;
+  }
+}
+
+@Component({
+  selector: 'app-value-provider',
+  template: `
+  <input type="text" (input)="onInput($event.target.value)">  `,
+  styles: [`
+    :host {display: block}
+  `]
+})
+export class ValueProviderComponent {
+  //ValueProvider implementation
+
+  @Output() typedValue = new EventEmitter<string>();
+    onInput(value:string){
+      this.typedValue.emit(value);
+  }
+}
+
+@Component({
+  selector: 'app-value-receiver',
+  template: `
+  <div> Received Value: {{printValue}} </div>  `,
+  styles: [`
+    :host {display: block}
+  `]
+})
+export class ValueReceiverComponent {
+  //ValueReceiver implementation
+  @Input() printValue:string;
+}
+
+------------------------------------------------------------------------------------------
+2)like counter
+
+import { Component } from '@angular/core';
+
+@Component({
+    selector: 'counter',
+    template: `
+        <h2 class = "counter">
+            {{Counter}}
+        </h2>
+        <button class = "counter-button" (click) = "increment()">Click</button>
+    `,
+    styles: [`
+        .counter-button {
+            font-size: 1rem;
+            padding: 5px 10px;
+            color:  #585858;
+        }
+    `]
+})
+
+export class CounterComponent {
+    constructor(){}
+        Counter = 42;
+        increment(){
+            this.Counter ++;
+        }
+    }
+
+------------------------------------------------------------------------------------------
+3)implement app routing logic
+
+////////////////this in routes.ts///////////////////////
+import { Routes } from '@angular/router'; 
+import { 
+    PublicComponent,
+    DashboardComponent,
+    LoginComponent,
+    Component404,
+} from '../components';
+import { GuardService } from './guard.service';
+
+export const routes: Routes = [
+    // Implement your solution here
+    //example { path: 'test', component: TestComponent, pathMatch: 'full'}
+    { path: '', pathMatch: 'full', redirectTo: 'public' },
+    {path:'public',component:PublicComponent},
+    {path:'login',component:LoginComponent},
+    {
+        path:'dashboard',
+        component:DashboardComponent,
+        canActivate:[GuardService],
+    },
+    {path:'**',component:Component404}
+];
+
+
+///////////////////this in guard.service.ts//////////////////////
+import { Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class GuardService implements CanActivate{
+  // Implement your solution here
+  constructor(private router:Router){}
+  canActivate(route: ActivatedRouteSnapshot, state:RouterStateSnapshot):boolean{
+    const token = localStorage.getItem('token')
+
+    if (token !== null && token !== ""){
+      return true;
+    }
+    else
+    {
+      this.router.navigate(['/login'],{
+        queryParams:{returnUrl:state.url},
+      });
+      return false;
+    }
+  }
+}
