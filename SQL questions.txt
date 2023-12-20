@@ -1,0 +1,13 @@
+====SQL====
+1. What is SQL?
+2. What are Tables and Fields?
+3. What is a Primary Key, Unique Key and Foreign Key?
+4. What is a Join? List its different types?
+5. What is an Index?
+6. What is the difference between Clustered and Non-clustered index?
+7. What is a Query?
+8. What is a View?
+9. What is Normalization and Denormalization?
+10. What are the TRUNCATE, DELETE and DROP statements?
+11. What is a Stored Procedure?
+12. Queries for Update, Delete, Create, Alter, Truncate, Drop.

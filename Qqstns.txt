@@ -1,0 +1,71 @@
+1.jit vs intrepreter
+2.use of inheritance
+3.final vs static
+4.can we have a static class--> inner class can be static
+5.abstraction
+6.fully encapsulated class
+7.wrapper class
+8.String pool
+9.jdbc api
+10.jdbc api classes and interfaces.
+11.methods of object class
+12.return type of hashcode()
+13.which classes generate checked exception
+14.finally keyword
+15.cursors
+16.listIterators method
+17.legacy classes and interfaces
+18.annotations in java core
+19.marker interface
+20.runnable interface->method
+21.thread class methods->significance of run in thread
+22.Thread life cycle
+23. join method in thread
+24.sleep in thread
+-----------------------------
+25.AOP
+26.@ComponantScan
+27.StereoType Annotations
+28.DI in hibernate
+29.@bean
+30.@Model attriute-> collect data using object. Name should be same
+31.data from controller to view
+32.ModelAndView and Model(object from addAttribute)->methods,returntypes
+33.Handler methods-> are methods in controller
+34.@RestController vs @Controller
+35.ResponseEntity
+36.@ExceptionHandler
+37.Swagger-Y?=Documentation Purpose
+38.
+
+
+
+
+
+
+
+
+
+
+
+
+
+ String[] mItems= {
+                "Add Employee",
+                "List all Employees",
+                "Search Employee",
+                "Remove Employee",
+                "Exit"
+        };
+
+        for(int i=0;i<mItems.length;i++) {
+            System.out.println((i+1)+"."+mItems[i]);
+        }
+    }
+
+    public int promptForChoice() {
+        Scanner sc=new Scanner(System.in);
+        System.out.println("Enter your choice:");
+        int ch=sc.nextInt();
+        return ch;
+    }
